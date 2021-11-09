@@ -1,0 +1,48 @@
+version: "3"
+services:
+  zookeeper1:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 12181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:12181"
+
+  kafka1:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper1
+    ports:
+      - "19093:19093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:12181,zookeeper-3:12181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:19093
+      KAFKA_CREATE_TOPICS: "hellooo"
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+  kafka2:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka2
+    ports:
+      - "29093:29093"
+    depends_on:
+      - zookeeper1
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:12181,zookeeper-3:12181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29093
+
+  kafka3:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka3
+    ports:
+      - "39093:39093"
+    depends_on:
+      - zookeeper1
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:12181,zookeeper-3:12181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:39093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
